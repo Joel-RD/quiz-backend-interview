@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Test Técnico Backend Junior — 75 preguntas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 8px;
+    }
+
+    .lead {
+      color: #718096;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .status {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .qnum, .score {
+      background: #f7fafc;
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-wrap {
+      background: #e2e8f0;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #48bb78, #38a169);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .question {
+      margin: 24px 0;
+    }
+
+    .qtext {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      background: #f7fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .option:hover:not(.locked) {
+      background: #edf2f7;
+      border-color: #cbd5e0;
+      transform: translateY(-1px);
+    }
+
+    .option.correct {
+      background: #f0fff4;
+      border-color: #48bb78;
+      color: #22543d;
+    }
+
+    .option.wrong {
+      background: #fed7d7;
+      border-color: #e53e3e;
+      color: #742a2a;
+    }
+
+    .option.locked {
+      cursor: not-allowed;
+    }
+
+    .meta {
+      margin-top: 20px;
+    }
+
+    .feedback {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .feedback.ok {
+      background: #f0fff4;
+      color: #22543d;
+      border: 1px solid #48bb78;
+    }
+
+    .feedback.err {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 1px solid #e53e3e;
+    }
+
+    footer {
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .next-btn, .restart-btn {
+      background: #4299e1;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .next-btn:hover:not(:disabled) {
+      background: #3182ce;
+      transform: translateY(-1px);
+    }
+
+    .next-btn:disabled {
+      background: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .restart-btn {
+      background: #ef4444;
+    }
+
+    .restart-btn:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    .summary {
+      display: none;
+      background: #f7fafc;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .summary.show {
+      display: block;
+    }
+
+    .summary h3 {
+      color: #1a202c;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .summary p {
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .summary strong {
+      color: #2d3748;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+
+      .status {
+        text-align: center;
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .qtext {
+        font-size: 16px;
+      }
+
+      .option {
+        padding: 12px;
+        font-size: 15px;
+      }
+    }
+  </style>
+
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Test Técnico — Backend Junior (75 preguntas)</h1>
+        <p class="lead">Preguntas de selección múltiple. Lee cuidadosamente; algunas opciones son trampas.
+          Responde y ve el resultado inmediatamente.</p>
+      </div>
+      <div class="status">
+        <div class="qnum">Pregunta <span id="current">1</span> / 75</div>
+        <div class="score">Puntaje: <span id="score">0</span></div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px">
+        <div style="flex:1">
+          <div class="progress-wrap" aria-hidden="true">
+            <div class="progress-bar" id="progress"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px">
+            <div class="small">Progreso</div>
+            <div class="small" id="percent">0%</div>
+          </div>
+        </div>
+        <div style="width:160px;text-align:right" class="small">Correctas: <span id="answered">0</span></div>
+      </div>
+
+      <main id="mainCard">
+        <!-- Tarjeta de pregunta generada por JS -->
+      </main>
+
+      <footer>
+        <div class="small">Nota: una vez contestada cada pregunta no se puede cambiar la respuesta.</div>
+        <div>
+          <button id="nextBtn" class="next-btn" disabled>Siguiente</button>
+          <button id="restartBtn" class="restart-btn" style="background:#ef4444;margin-left:8px">Reiniciar</button>
+        </div>
+      </footer>
+
+      <div id="summary" class="summary">
+        <h3>Resumen final</h3>
+        <p class="small">Has completado el test.</p>
+        <p>Puntuación: <strong id="finalScore">0</strong> / 75</p>
+        <p id="percentScore"></p>
+        <p class="small">Sugerencia: revisa las preguntas incorrectas y practica las áreas donde tuviste menos
+          aciertos.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Preguntas: 75 preguntas, 5 opciones cada una, solo un índice correcto.
+    // Las preguntas siguen un orden progresivo: básicas -> intermedias (git, postman, sql, http, auth, testing, caching, diseño).
+    const questions = [
+      {
+        q: "¿Qué hace el método HTTP GET?", opts: [
+          "Envía datos al servidor para crear un recurso",
+          "Solicita recuperar datos sin alterar el estado del recurso",
+          "Actualiza parte de un recurso existente (parcialmente)",
+          "Elimina un recurso en el servidor",
+          "Inicia una transacción en la base de datos"
+        ], ans: 1
+      },
+      {
+        q: "¿Cuál es el propósito principal de una API REST?", opts: [
+          "Permitir la comunicación entre servicios usando convenciones web",
+          "Servir solo páginas HTML estáticas",
+          "Almacenar datos en el navegador",
+          "Reemplazar bases de datos relacionales",
+          "Solo para aplicaciones móviles"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué código HTTP indica que la petición fue exitosa y creó un recurso?", opts: [
+          "200 OK",
+          "403 Forbidden",
+          "201 Created",
+          "500 Internal Server Error",
+          "302 Found"
+        ], ans: 2
+      },
+      {
+        q: "En SQL, ¿qué instrucción se usa para obtener datos de una tabla?", opts: [
+          "GET FROM",
+          "SELECT",
+          "PULL",
+          "FETCH",
+          "READ"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué significa 'idempotente' en el contexto de métodos HTTP?", opts: [
+          "Que puede ejecutarse varias veces con efectos acumulativos",
+          "Que no tiene efecto alguno",
+          "Que realizarlo una o varias veces produce el mismo resultado",
+          "Que sólo funciona una vez",
+          "Que redefine los encabezados HTTP"
+        ], ans: 2
+      },
+      {
+        q: "¿Qué comando de Git crea un nuevo commit con los cambios ya añadidos al área de staging?", opts: [
+          "git add",
+          "git push",
+          "git commit",
+          "git merge",
+          "git stash"
+        ], ans: 2
+      },
+      {
+        q: "En Git, ¿qué hace git pull?", opts: [
+          "Fuerza borrar la rama remota",
+          "Trae y fusiona cambios desde el repositorio remoto a la rama local",
+          "Solo envía commits locales al remoto",
+          "Cambia el mensaje del último commit",
+          "Crea una etiqueta (tag) en remoto"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es una migración de base de datos?", opts: [
+          "Un archivo para respaldar la base de datos completa",
+          "Una instrucción SQL para borrar tablas",
+          "Una forma de versionar cambios en el esquema de la base de datos",
+          "Un backup automático en la nube",
+          "Un trigger para optimizar consultas"
+        ], ans: 2
+      },
+      {
+        q: "¿Cuál es la función de un índice en una base de datos relacional?", opts: [
+          "Aumentar el espacio en disco sin beneficios",
+          "Mejorar la velocidad de lectura para consultas específicas",
+          "Garantizar la normalización 3NF",
+          "Proteger la base con encriptación",
+          "Reemplazar la necesidad de joins"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es ACID en bases de datos?", opts: [
+          "Un tipo de consulta SQL avanzada",
+          "Un conjunto de propiedades que garantizan transacciones fiables (Atomicity, Consistency, Isolation, Durability)",
+          "Un protocolo de red",
+          "Un lenguaje de modelado",
+          "Un método de caché distribuido"
+        ], ans: 1
+      },
+      {
+        q: "¿Cuál de estos es un tipo común de JOIN en SQL?", opts: [
+          "INNER JOIN",
+          "FAST JOIN",
+          "PARALLEL JOIN",
+          "DEEP JOIN",
+          "LIGHT JOIN"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué indica un código HTTP 404?", opts: [
+          "Autenticación requerida",
+          "Permiso denegado",
+          "Recurso no encontrado",
+          "Petición mal formada",
+          "Servidor sobrecargado"
+        ], ans: 2
+      },
+      {
+        q: "En autenticación, ¿qué es un JWT (JSON Web Token)?", opts: [
+          "Un tipo de base de datos",
+          "Un token compacto para transmitir reclamos entre dos partes",
+          "Un framework web",
+          "Un servicio de almacenamiento",
+          "Un algoritmo de hashing"
+        ], ans: 1
+      },
+      {
+        q: "¿Cuál es la diferencia entre encriptación y hashing?", opts: [
+          "Hashing es reversible y la encriptación no",
+          "Encriptación y hashing son exactamente lo mismo",
+          "Encriptación es reversible con clave; hashing no (es de una vía)",
+          "Ambos son métodos de compresión de datos",
+          "Hashing cifra con AES y encriptación con SHA"
+        ], ans: 2
+      },
+      {
+        q: "¿Qué hace el comando git branch?", opts: [
+          "Borra la rama actual",
+          "Lista, crea o elimina ramas locales",
+          "Combina dos commits",
+          "Envía cambios al servidor remoto",
+          "Reescribe el historial de commits remotos"
+        ], ans: 1
+      },
+      {
+        q: "En REST, ¿cuál método HTTP suele usarse para actualizar un recurso por completo?", opts: [
+          "PATCH",
+          "GET",
+          "PUT",
+          "DELETE",
+          "HEAD"
+        ], ans: 2
+      },
+      {
+        q: "¿Qué hace el comando git checkout <branch>?", opts: [
+          "Muestra historial de commits",
+          "Cambia la rama activa a <branch>",
+          "Envía cambios al remoto",
+          "Crea un tag",
+          "Inicializa un repositorio nuevo"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué herramienta se usa frecuentemente para probar APIs manualmente y automatizar colecciones?", opts: [
+          "Docker",
+          "Postman",
+          "Kubernetes",
+          "Webpack",
+          "Redis"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es SQL injection?", opts: [
+          "Una técnica para optimizar consultas SQL",
+          "Un ataque que inyecta consultas maliciosas en entradas no validadas",
+          "Una herramienta para migrar esquemas",
+          "Un tipo de índice",
+          "Un comando de respaldo (bak)"
+        ], ans: 1
+      },
+      {
+        q: "¿Cuál es la diferencia entre WHERE y HAVING en SQL?", opts: [
+          "WHERE filtra después de agregaciones, HAVING antes",
+          "HAVING se usa sólo en subconsultas",
+          "WHERE filtra filas antes de agregaciones; HAVING filtra resultados agregados",
+          "No hay diferencia",
+          "HAVING es específico de MySQL"
+        ], ans: 2
+      },
+      {
+        q: "¿Qué hace un ORM (Object-Relational Mapping)?", opts: [
+          "Convierte objetos en JSON únicamente",
+          "Mapea objetos del lenguaje a tablas de la base de datos y simplifica consultas",
+          "Reemplaza la base de datos por ficheros planos",
+          "Es una herramienta de testing",
+          "Gestiona únicamente las migraciones"
+        ], ans: 1
+      },
+      {
+        q: "En backend, ¿qué es 'scalabilidad'?", opts: [
+          "Capacidad de un sistema para manejar crecimiento de carga manteniendo rendimiento",
+          "Cantidad de líneas de código en un proyecto",
+          "Número de repositorios en GitHub",
+          "Tamaño del archivo ejecutable",
+          "Un método para encriptar datos"
+        ], ans: 0
+      },
+      {
+        q: "¿Cuál es la finalidad principal de un load balancer?", opts: [
+          "Distribuir tráfico entre múltiples servidores para alta disponibilidad y rendimiento",
+          "Almacenar datos en caché de larga duración",
+          "Gestionar la autenticación de usuarios",
+          "Servir contenido estático desde CDN",
+          "Realizar backups periódicos"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué hace HTTP status 503?", opts: [
+          "Recurso no encontrado",
+          "Servicio no disponible (temporalmente)",
+          "Petición prohibida",
+          "Petición mal formada",
+          "Redirect permanente"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es CORS y por qué importa?", opts: [
+          "Un protocolo de base de datos",
+          "Cross-Origin Resource Sharing — controla qué orígenes pueden acceder a recursos desde el navegador",
+          "Un formato de imagen",
+          "Un tipo de token JWT",
+          "Un framework para APIs"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué encabezado HTTP se usa para indicar el tipo de contenido?", opts: [
+          "Accept-Language",
+          "Content-Type",
+          "User-Agent",
+          "X-Forwarded-For",
+          "Cache-Control"
+        ], ans: 1
+      },
+      {
+        q: "¿Por qué usamos variables de entorno en aplicaciones backend?", opts: [
+          "Para almacenar datos voluminosos",
+          "Para configurar secretos, rutas y settings separando código de configuración",
+          "Porque la base de datos lo exige",
+          "Sólo para pruebas unitarias",
+          "Para encriptar el código fuente"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es rate limiting?", opts: [
+          "Limitar el número de peticiones por cliente para prevenir abuso",
+          "Acelerar las consultas SQL",
+          "Reducir el tamaño de la respuesta",
+          "Aumentar la prioridad de logs",
+          "Cambiar el puerto del servidor"
+        ], ans: 0
+      },
+      {
+        q: "¿Cuál es la ventaja de usar prepared statements en SQL?", opts: [
+          "Hacen las consultas más lentas",
+          "Protegen contra SQL injection y permiten reuso de plan de ejecución",
+          "Reemplazan la necesidad de índices",
+          "Solo sirven para SELECT",
+          "Compilan la base de datos"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un índice compuesto en SQL?", opts: [
+          "Un índice que combina varias columnas para mejorar ciertas búsquedas",
+          "Un índice que se divide en varias tablas",
+          "Un backup incremental",
+          "Un trigger especial",
+          "Un tipo de vista materializada"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es 'sharding' en bases de datos?", opts: [
+          "Particionar datos horizontalmente entre múltiples nodos",
+          "Encriptar la base de datos entero",
+          "Una técnica para crear índices",
+          "La misma cosa que replication",
+          "Un tipo de JOIN"
+        ], ans: 0
+      },
+      {
+        q: "¿Cuál es la diferencia básica entre SQL y NoSQL?", opts: [
+          "SQL es para frontend, NoSQL para backend",
+          "SQL es relacional con esquema fijo; NoSQL suele ser no relacional y más flexible en esquema",
+          "NoSQL no permite consultas",
+          "SQL no soporta transacciones",
+          "NoSQL siempre es más lento"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es Redis típicamente usado para en infra de backend?", opts: [
+          "Servidor SMTP",
+          "Almacenamiento en caché, sesiones y estructuras rápidas en memoria",
+          "Reemplazo de Docker",
+          "Base de datos relacional principal",
+          "Editor de texto remoto"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es una cola de mensajes (message queue)?", opts: [
+          "Un mecanismo para ejecutar queries paralelos en SQL",
+          "Un sistema para enviar y almacenar mensajes entre productores y consumidores desacoplados",
+          "Un tipo de índice",
+          "Un contenedor Docker",
+          "Una técnica de caching"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es RabbitMQ o Kafka?", opts: [
+          "Lenguajes de programación",
+          "Sistemas de mensajería/streaming para comunicación asíncrona entre servicios",
+          "Bases de datos relacionales",
+          "Herramientas de monitoreo",
+          "Frameworks CSS"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es 'idempotencia' en una API y por qué importa? (pregunta tipo trampa)", opts: [
+          "Que la llamada nunca falla",
+          "Que repetir la misma operación tiene el mismo efecto (importante para reintentos seguros)",
+          "Que devuelve siempre el mismo resultado aunque el estado cambie",
+          "Que solo funciona con GET",
+          "Que obliga a usar HTTPS"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un 'deadlock' en bases de datos?", opts: [
+          "Cuando dos transacciones esperan mutuamente por recursos y ninguna progresa",
+          "Un indice corrupto",
+          "Un backup fallido",
+          "Un tipo de migración",
+          "Un dead letter queue"
+        ], ans: 0
+      },
+      {
+        q: "¿Cuál es la función de un 'reverse proxy' como Nginx en front de un backend?", opts: [
+          "Compilar el backend",
+          "Actuar como intermediario que distribuye, cachea y sirve TLS/terminación SSL",
+          "Reemplazar la base de datos",
+          "Generar código SQL automáticamente",
+          "Crear ramas en Git"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es TLS y por qué lo usamos?", opts: [
+          "Un lenguaje de templates",
+          "Transport Layer Security — para cifrar comunicaciones entre cliente y servidor",
+          "Un sistema de colas",
+          "Un tipo de base de datos",
+          "Un protocolo de autenticación de usuarios"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué mecanismo se usa para evitar CSRF en aplicaciones web?", opts: [
+          "Usar sólo GET requests",
+          "Tokens CSRF en formularios o SameSite cookies",
+          "Encriptar la base de datos",
+          "Desactivar JavaScript",
+          "Usar HTTP/2"
+        ], ans: 1
+      },
+      {
+        q: "¿Cuál es la diferencia entre autenticación y autorización?", opts: [
+          "Autenticación valida identidades; autorización controla permisos y acceso",
+          "Autenticación es para APIs; autorización para frontend",
+          "Son lo mismo",
+          "Autorización verifica contraseñas",
+          "Autenticación cifra datos"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es hashing con 'salt' para contraseñas?", opts: [
+          "Un proceso de compresión de contraseñas",
+          "Agregar datos aleatorios (salt) antes de hashear para prevenir rainbow tables",
+          "Una forma de encriptar sin clave",
+          "Una técnica para indexar contraseñas",
+          "Un tipo de token de autenticación"
+        ], ans: 1
+      },
+      {
+        q: "¿Cuál de estos es un buen método para almacenar secretos en producción?", opts: [
+          "Incluirlos en el repo público",
+          "Usar un gestor de secretos (vault) o variables de entorno en CI protegidas",
+          "Dejarlos en el archivo .env subido al remoto",
+          "Mandarlos por email a todos los devs",
+          "Escribirlos en los comentarios del código"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es 'blue-green deployment'?", opts: [
+          "Un método de versionado de base de datos",
+          "Estrategia de despliegue con dos entornos paralelos para minimizar downtime y permitir rollback rápido",
+          "Un estilo de commit en Git",
+          "Una forma de cachear queries",
+          "Un plugin de Postman"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un 'health check' en microservicios?", opts: [
+          "Una comprobación que indica si un servicio está vivo y funcionando para orquestadores o balancers",
+          "Una auditoría de seguridad manual",
+          "Un test unitario",
+          "Un índice de base de datos",
+          "Una herramienta de profiling"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es el principio de 'least privilege' en seguridad?", opts: [
+          "Dar acceso total a todos por simplicidad",
+          "Conceder a cada proceso/usuario solo los permisos estrictamente necesarios",
+          "Permitir privilegios solo en desarrollo",
+          "Un tipo de firewall",
+          "Un rollback de permisos"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué hace un 'reverse proxy' diferente a un 'forward proxy'?", opts: [
+          "Un forward proxy actúa para el cliente; un reverse proxy actúa delante de servidores",
+          "Un reverse proxy siempre encripta datos, el forward no",
+          "El forward es hardware, el reverse es software",
+          "Son idénticos",
+          "El reverse proxy reemplaza la base de datos"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un endpoint en una API?", opts: [
+          "El nombre de usuario en Git",
+          "Una URL específica donde se expone un recurso o acción",
+          "Una clave primaria en SQL",
+          "Un contenedor de Docker",
+          "Un archivo .env"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué significa 'stateless' en APIs REST?", opts: [
+          "Que cada petición contiene toda la información necesaria sin depender de estado previo en el servidor",
+          "Que no se guarda nada en la base de datos",
+          "Que no se usan cookies",
+          "Que solo funciona con POST",
+          "Que no se necesita autenticación"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un mock en pruebas de backend?", opts: [
+          "Una base de datos real",
+          "Un objeto simulado que reemplaza dependencias externas en un test",
+          "Una herramienta de despliegue",
+          "Un comando de Git",
+          "Un endpoint inseguro"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un 'unit test'?", opts: [
+          "Una prueba que evalúa todo el sistema de extremo a extremo",
+          "Una prueba que valida una unidad pequeña y aislada de código",
+          "Una auditoría de seguridad",
+          "Un test de integración con base de datos",
+          "Un script de despliegue"
+        ], ans: 1
+      },
+      {
+        q: "En Postman, ¿qué es una 'environment variable'?", opts: [
+          "Un valor configurable para usar en múltiples requests",
+          "Un log de errores",
+          "Un tipo de header HTTP",
+          "Un índice SQL",
+          "Un contenedor Docker"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué significa CRUD?", opts: [
+          "Create, Read, Update, Delete",
+          "Connect, Run, Upload, Download",
+          "Cache, Restore, Undo, Deploy",
+          "Commit, Rebase, Update, Drop",
+          "Code, Run, Update, Debug"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un webhook?", opts: [
+          "Un servidor de base de datos",
+          "Un mecanismo para enviar notificaciones HTTP en tiempo real a una URL cuando ocurre un evento",
+          "Una librería de testing",
+          "Un estilo de API REST",
+          "Un endpoint inseguro"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un 'foreign key' en SQL?", opts: [
+          "Una restricción que conecta una columna con la clave primaria de otra tabla",
+          "Una consulta SELECT",
+          "Un índice automático",
+          "Una función agregada",
+          "Una copia de seguridad"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un trigger en SQL?", opts: [
+          "Una instrucción automática que se ejecuta ante ciertos eventos en una tabla",
+          "Un índice compuesto",
+          "Una clave primaria",
+          "Un backup incremental",
+          "Un procedimiento almacenado que solo se ejecuta manualmente"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué significa 'normalización' en bases de datos?", opts: [
+          "Reducir la redundancia de datos organizándolos en tablas relacionadas",
+          "Aumentar el tamaño de los índices",
+          "Duplicar datos para mejorar consultas",
+          "Eliminar claves primarias",
+          "Convertir datos a JSON"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es Docker?", opts: [
+          "Un sistema operativo",
+          "Una plataforma de contenedores para empaquetar y ejecutar aplicaciones de forma aislada",
+          "Un lenguaje de programación",
+          "Un protocolo HTTP",
+          "Un tipo de base de datos NoSQL"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué hace docker-compose?", opts: [
+          "Gestiona múltiples contenedores definidos en un archivo YAML",
+          "Compila código Java",
+          "Crea migraciones SQL",
+          "Administra usuarios de Linux",
+          "Cifra datos en reposo"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un 'API key'?", opts: [
+          "Una clave secreta para autenticar y autorizar acceso a una API",
+          "Una contraseña de base de datos",
+          "Un índice compuesto",
+          "Un branch de Git",
+          "Un archivo de configuración"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué significa 'rollback' en una transacción?", opts: [
+          "Confirmar cambios",
+          "Deshacer cambios realizados en la transacción",
+          "Crear un índice",
+          "Cerrar la conexión",
+          "Ejecutar un trigger"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un balanceo de carga 'round-robin'?", opts: [
+          "Asignar peticiones en orden circular a los servidores",
+          "Siempre enviar todo a un solo servidor",
+          "Distribuir tráfico por ubicación geográfica",
+          "Usar hashing de IP",
+          "Filtrar por cabeceras HTTP"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué significa HTTP status 401?", opts: [
+          "Recurso creado",
+          "No autorizado (se requiere autenticación)",
+          "No encontrado",
+          "Error interno",
+          "Servicio no disponible"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué es un 'middleware' en frameworks backend?", opts: [
+          "Una capa de funciones que procesan peticiones antes de llegar al manejador final",
+          "Un tipo de base de datos",
+          "Un contenedor Docker",
+          "Un índice SQL",
+          "Una librería de frontend"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué hace git merge?", opts: [
+          "Combina cambios de una rama en otra",
+          "Elimina commits",
+          "Envía cambios al remoto",
+          "Crea un tag",
+          "Compila el repositorio"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué diferencia hay entre git merge y git rebase?", opts: [
+          "Merge combina ramas manteniendo historial; rebase reescribe la base de commits",
+          "Rebase es solo para borrar ramas",
+          "No hay diferencia",
+          "Merge es solo remoto",
+          "Rebase se usa para compilar"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es una prueba de integración?", opts: [
+          "Prueba que valida cómo interactúan múltiples componentes entre sí",
+          "Prueba aislada de una función",
+          "Prueba de UI",
+          "Auditoría manual",
+          "Migración de base de datos"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un microservicio?", opts: [
+          "Un módulo independiente que implementa una funcionalidad pequeña dentro de un sistema mayor",
+          "Un tipo de base de datos",
+          "Un índice SQL",
+          "Un estilo de commit",
+          "Una herramienta de monitoreo"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un API Gateway?", opts: [
+          "Un único punto de entrada que enruta peticiones a microservicios y aplica políticas de seguridad",
+          "Un trigger SQL",
+          "Un load balancer de base de datos",
+          "Un cliente HTTP",
+          "Un entorno de Postman"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué significa DRY en programación?", opts: [
+          "Don’t Repeat Yourself — evitar duplicar lógica",
+          "Deploy Right Yesterday",
+          "Data Replication Yield",
+          "Drop Relational Yields",
+          "Debugging Requires YAML"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un 'endpoint de health check' típico?", opts: [
+          "/metrics",
+          "/status o /health",
+          "/config",
+          "/reload",
+          "/backup"
+        ], ans: 1
+      },
+      {
+        q: "¿Qué diferencia hay entre PUT y PATCH?", opts: [
+          "PUT reemplaza un recurso completo; PATCH actualiza parcialmente",
+          "PUT solo funciona con JSON, PATCH con XML",
+          "PATCH elimina un recurso",
+          "PUT no es idempotente, PATCH sí lo es",
+          "No hay diferencia"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un CDN?", opts: [
+          "Content Delivery Network — red de servidores que distribuye contenido estático de forma rápida y cercana al usuario",
+          "Un contenedor de Docker",
+          "Un protocolo HTTP",
+          "Un índice SQL",
+          "Un repositorio Git"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué significa HTTP status 204?", opts: [
+          "Petición exitosa sin contenido en la respuesta",
+          "Error de autenticación",
+          "Recurso no encontrado",
+          "Error interno del servidor",
+          "Servicio no disponible"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es un test de regresión?", opts: [
+          "Verificar que nuevas funcionalidades no rompen comportamientos existentes",
+          "Un backup incremental",
+          "Un índice compuesto",
+          "Un rollback manual",
+          "Un test de hardware"
+        ], ans: 0
+      },
+      {
+        q: "¿Qué es el principio KISS en programación?", opts: [
+          "Keep It Simple, Stupid — favorecer la simplicidad",
+          "Keep It Safe & Secure",
+          "Keep Internal SQL Sorted",
+          "Key Indexed Search Strategy",
+          "Kernel Integration System Software"
+        ], ans: 0
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const mainCard = document.getElementById("mainCard");
+    const scoreEl = document.getElementById("score");
+    const qnumEl = document.getElementById("current");
+    const progressBar = document.getElementById("progress");
+    const percentEl = document.getElementById("percent");
+    const answeredEl = document.getElementById("answered");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const summary = document.getElementById("summary");
+    const finalScore = document.getElementById("finalScore");
+    const percentScore = document.getElementById("percentScore");
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      qnumEl.textContent = currentIndex + 1;
+      mainCard.innerHTML = `
+        <div class="question">
+          <div style="flex:1">
+            <p class="qtext">${q.q}</p>
+            <div class="options">
+              ${q.opts.map((opt, i) => `
+                <div class="option" data-index="${i}">${opt}</div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="feedback" id="feedback"></div>
+        </div>
+      `;
+
+      document.querySelectorAll(".option").forEach(el => {
+        el.addEventListener("click", () => selectOption(el, q.ans));
+      });
+      nextBtn.disabled = true;
+    }
+
+    function selectOption(el, correctIndex) {
+      if (el.classList.contains("locked")) return;
+      const idx = parseInt(el.dataset.index);
+      const options = document.querySelectorAll(".option");
+      options.forEach(o => o.classList.add("locked"));
+      if (idx === correctIndex) {
+        el.classList.add("correct");
+        document.getElementById("feedback").textContent = "¡Correcto!";
+        document.getElementById("feedback").className = "feedback ok";
+        score++;
+        scoreEl.textContent = score;
+      } else {
+        el.classList.add("wrong");
+        options[correctIndex].classList.add("correct");
+        document.getElementById("feedback").textContent = "Incorrecto";
+        document.getElementById("feedback").className = "feedback err";
+      }
+      answeredEl.textContent = currentIndex + 1;
+      updateProgress();
+      nextBtn.disabled = false;
+
+      if (currentIndex === questions.length - 1) {
+        nextBtn.textContent = "Finalizar";
+      }
+    }
+
+    function updateProgress() {
+      const percent = Math.round(((currentIndex + 1) / questions.length) * 100);
+      progressBar.style.width = percent + "%";
+      percentEl.textContent = percent + "%";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+      } else {
+        showSummary();
+      }
+    });
+
+    function showSummary() {
+      summary.classList.add("show");
+      finalScore.textContent = score;
+      percentScore.textContent = "Porcentaje: " + Math.round((score / questions.length) * 100) + "%";
+      mainCard.innerHTML = "";
+      nextBtn.style.display = "none";
+    }
+
+    restartBtn.addEventListener("click", () => {
+      currentIndex = 0;
+      score = 0;
+      scoreEl.textContent = 0;
+      answeredEl.textContent = 0;
+      progressBar.style.width = "0%";
+      percentEl.textContent = "0%";
+      summary.classList.remove("show");
+      nextBtn.style.display = "inline-block";
+      nextBtn.textContent = "Siguiente";
+      renderQuestion();
+    });
+
+    renderQuestion();
+  </script>
+</body>
+
+</html>
